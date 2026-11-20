@@ -1,0 +1,22 @@
+# Usage:
+#   docker compose up -d --build     build (or rebuild) and start in the background
+#   docker compose logs -f           follow the logs (errors only: access log is off)
+#   docker compose down              stop and remove the container
+services:
+  camera-study:
+    build: .
+    image: camera-study:latest
+    ports:
+      # host:container. Write "127.0.0.1:8876:8080" instead to keep it reachable
+      # only from your own machine (local tests).
+      - "8876:8080"
+    restart: unless-stopped
+    security_opt:
+      # The process can never gain more privileges than the non-root nginx user.
+      - no-new-privileges:true
+    healthcheck:
+      # busybox wget ships with the alpine image: no extra tool needed.
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
