@@ -198,7 +198,7 @@ p {
 /* Workspace: task panel + service ------------------------------------- */
 .workspace {
   display: grid;
-  grid-template-columns: 25rem 1fr;
+  grid-template-columns: 30rem 1fr;
   gap: 1.5rem;
 }
 
@@ -703,22 +703,34 @@ button.slot:disabled {
   border-radius: 4px;
 }
 
-/* Assistant notification (jit condition) -------------------------------- */
-.assistant-note {
+/* Assistant notification (jit condition) --------------------------------
+   A modal <dialog> placed bottom-right instead of centred. Its ::backdrop is the
+   veil that blocks the page until the participant presses "Review". */
+dialog.assistant-note {
   position: fixed;
-  bottom: 1.25rem;
-  right: 1.25rem;
-  z-index: 10;
-  display: flex;
-  gap: .8rem;
+  inset: auto 1.25rem 1.25rem auto;
+  margin: 0;
   width: min(40rem, calc(100vw - 2.5rem));
+  max-width: none;
   background: var(--surface);
+  color: var(--ink);
   border: 1px solid var(--line);
   border-left: 4px solid var(--primary);
   border-radius: var(--radius-sm);
   padding: 1rem;
-  box-shadow: 0 12px 32px rgba(27, 34, 48, .18);
+  box-shadow: 0 12px 32px rgba(27, 34, 48, .25);
+}
+
+/* Only when open: a display value on a closed <dialog> would make it visible. */
+dialog.assistant-note[open] {
+  display: flex;
+  gap: .8rem;
   animation: note-in .25s ease-out;
+}
+
+dialog.assistant-note::backdrop {
+  background: rgba(27, 34, 48, .45);
+  animation: veil-in .2s ease-out;
 }
 
 .assistant-avatar {
@@ -745,6 +757,12 @@ button.slot:disabled {
   from {
     opacity: 0;
     transform: translateY(.5rem);
+  }
+}
+
+@keyframes veil-in {
+  from {
+    opacity: 0;
   }
 }
 
@@ -794,7 +812,8 @@ dialog.permission::backdrop {
 
 @media (prefers-reduced-motion: reduce) {
 
-  .assistant-note,
+  dialog.assistant-note[open],
+  dialog.assistant-note::backdrop,
   .is-target-area {
     animation: none;
   }

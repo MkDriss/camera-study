@@ -69,6 +69,28 @@ Le site statique se trouve dans `dist/camera-study/browser/`. Si tu l'héberges 
 
 Avant de l'héberger hors de l'université, vérifie que c'est compatible avec ton dossier d'éthique et avec les règles de gestion des données du module.
 
+## Avec Docker
+
+Avec Docker Compose (recommandé) :
+
+```bash
+docker compose up -d --build   # construit et démarre en arrière-plan
+docker compose down            # arrête
+```
+
+Ou avec Docker seul :
+
+```bash
+docker build -t camera-study .
+docker run --rm -p 8876:8080 camera-study
+```
+
+Après une modification de `study.config.ts`, relance `docker compose up -d --build` pour reconstruire l'image.
+
+Puis ouvre http://localhost:8876/?v=q3&code=TEST01
+
+L'image finale ne contient que nginx et les fichiers compilés. nginx n'enregistre pas de journal d'accès, pour ne pas associer les codes participants à des adresses IP.
+
 ## Structure
 
 ```

@@ -19,11 +19,11 @@
     </div>
   </header>
 
-  <!-- @if (hasPlaceholders && step() === 'instructions') {
+  @if (hasPlaceholders && step() === 'instructions') {
     <p class="placeholder-warning" role="note">
       Researcher note: some texts in study.config.ts still start with “TODO”.
     </p>
-  } -->
+  }
 
   <main class="page">
     @switch (step()) {
@@ -94,7 +94,7 @@
           </p>
           @if (formLink(); as link) {
             <div class="actions">
-              <a class="btn btn-primary" [href]="link">Open the questionnaire</a>
+              <a class="btn btn-primary" target="_blank" [href]="link">Open the questionnaire</a>
             </div>
           }
         </section>
@@ -103,20 +103,10 @@
   </main>
 
   @if (notificationVisible()) {
-    <aside class="assistant-note" role="status">
-      <div class="assistant-avatar" aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-          <circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="11" r=".6" fill="currentColor"/><circle cx="15" cy="11" r=".6" fill="currentColor"/><path d="M9 14.5c1.6 1.4 4.4 1.4 6 0"/>
-        </svg>
-      </div>
-      <div class="assistant-content">
-        <p class="assistant-name">{{ profile!.assistantName }}</p>
-        @for (p of paras(config.texts.notificationText); track $index) {
-          <p>{{ p }}</p>
-        }
-        <button type="button" class="btn btn-primary btn-small" (click)="reviewNotification()">Review</button>
-      </div>
-    </aside>
+    <app-assistant-notification
+      [assistantName]="profile!.assistantName"
+      [paragraphs]="paras(config.texts.notificationText)"
+      (reviewed)="reviewNotification()" />
   }
 
   @if (dialogOpen()) {

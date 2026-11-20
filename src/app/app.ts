@@ -1,5 +1,6 @@
 import { Component, computed, signal } from '@angular/core';
 import { AppProfile, Condition, LinkTarget, STUDY_CONFIG } from './study.config';
+import { AssistantNotification } from './assistant-notification';
 import { PermissionDialog } from './permission-dialog';
 import { Workspace } from './workspace';
 
@@ -14,7 +15,7 @@ type Step = 'invalid' | 'instructions' | 'account' | 'terms' | 'tasks' | 'done';
  */
 @Component({
   selector: 'app-root',
-  imports: [PermissionDialog, Workspace],
+  imports: [AssistantNotification, PermissionDialog, Workspace],
   templateUrl: './app.html',
   host: {
     '[style.--primary]': 'profile?.primary',
