@@ -1,0 +1,167 @@
+<div class="workspace">
+  <!-- Task panel: the participant's checklist ------------------------------>
+  <aside class="room" aria-label="Your tasks">
+    <h2 class="room-title">Your tasks</h2>
+    <div class="room-progress">
+      <div class="room-bar" role="progressbar" aria-label="Tasks completed"
+           [attr.aria-valuenow]="taskIndex()" aria-valuemin="0" [attr.aria-valuemax]="tasks().length">
+        <span [style.transform]="'scaleX(' + progress() + ')'"></span>
+      </div>
+      <span class="room-count">{{ taskIndex() }} of {{ tasks().length }} done</span>
+    </div>
+
+    <ol class="room-tasks">
+      @for (t of tasks(); track $index; let i = $index) {
+        <li class="room-task" [class.is-current]="isCurrent(i)" [class.is-done]="isDone(i)"
+            [attr.aria-current]="isCurrent(i) ? 'step' : null">
+          <span class="room-num" aria-hidden="true">
+            @if (isDone(i)) {
+              <svg viewBox="0 0 16 16" width="14" height="14"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            } @else {
+              {{ i + 1 }}
+            }
+          </span>
+          <div class="room-body">
+            <p class="room-task-title">{{ t.title }}</p>
+            <p class="room-where">in {{ t.section }}</p>
+            @if (isCurrent(i)) {
+              <p class="room-instruction">{{ t.instruction }}</p>
+              @if (!onCurrentTab()) {
+                <button type="button" class="btn btn-room" (click)="goTo(i)">Go to {{ t.section }}</button>
+              }
+            } @else if (isDone(i)) {
+              <span class="visually-hidden">Done.</span>
+            } @else {
+              <p class="room-locked">Unlocks after task {{ i }}</p>
+            }
+          </div>
+        </li>
+      }
+    </ol>
+  </aside>
+
+  <!-- The fake service ----------------------------------------------------->
+  <div class="service">
+    <nav class="service-nav" aria-label="Service sections">
+      <button type="button" class="tab" [class.is-open]="section() === 'home'"
+              [attr.aria-current]="section() === 'home' ? 'page' : null" (click)="goTo('home')">Home</button>
+      @for (t of tasks(); track $index; let i = $index) {
+        <button type="button" class="tab" [class.is-open]="section() === i" [class.is-target]="isCurrent(i)"
+                [attr.aria-current]="section() === i ? 'page' : null" (click)="goTo(i)">
+          {{ t.section }}
+          @if (isCurrent(i)) {
+            <span class="tab-badge"><span class="visually-hidden">current task, number </span>{{ i + 1 }}</span>
+          } @else if (isDone(i)) {
+            <svg class="tab-check" viewBox="0 0 16 16" width="14" height="14" aria-label="done"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          }
+        </button>
+      }
+    </nav>
+
+    @if (!allDone() && !onCurrentTab() && section() !== 'home') {
+      <p class="redirect">
+        Your current task is in <strong>{{ tasks()[taskIndex()].section }}</strong>.
+        <button type="button" class="link-button" (click)="goTo(taskIndex())">Go there</button>
+      </p>
+    }
+
+    <section class="service-page">
+      @if (section() === 'home') {
+        <h1 #sectionHeading tabindex="-1">Welcome back, {{ userName() }}</h1>
+        @if (allDone()) {
+          <p class="muted">All tasks are complete.</p>
+        } @else {
+          <p class="muted">Your tasks are listed on the left. Start with task {{ taskIndex() + 1 }}.</p>
+          <button type="button" class="btn btn-primary" (click)="goTo(taskIndex())">
+            Go to {{ tasks()[taskIndex()].section }}
+          </button>
+        }
+      } @else {
+        @let i = section();
+        @let t = tasks()[+i];
+        <h1 #sectionHeading tabindex="-1">{{ t.section }}</h1>
+
+        @if (t.kind === 'report') {
+          <p class="muted">{{ reportedCount(+i, t.items.length) }} of {{ t.items.length }} reported</p>
+          <ul class="report-list" [class.is-target-area]="isCurrent(+i)">
+            @for (item of t.items; track $index; let k = $index) {
+              <li>
+                <span>{{ item }}</span>
+                @if (isReported(+i, k) || isDone(+i)) {
+                  <span class="status-ok">Reported</span>
+                } @else {
+                  <button type="button" class="btn btn-secondary btn-small" [disabled]="!isActive(+i)"
+                          (click)="report(+i, k, t.items.length)">Report</button>
+                }
+              </li>
+            }
+          </ul>
+        } @else if (t.kind === 'appointment') {
+          @if (isDone(+i)) {
+            <p class="status-box">Appointment confirmed: <strong>{{ confirmedSlots()[+i] }}</strong></p>
+          } @else {
+            <div class="calendar-wrap" [class.is-target-area]="isCurrent(+i)">
+              <table class="calendar">
+                <caption class="visually-hidden">Available appointment slots</caption>
+                <thead>
+                  <tr><th scope="col"><span class="visually-hidden">Time</span></th>
+                    @for (d of t.days; track d) { <th scope="col">{{ d }}</th> }
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (time of t.times; track time) {
+                    <tr>
+                      <th scope="row">{{ time }}</th>
+                      @for (d of t.days; track d) {
+                        @let slot = d + ' ' + time;
+                        <td>
+                          @if (slotFree(t, slot)) {
+                            <button type="button" class="slot" [class.is-selected]="selectedSlot() === slot"
+                                    [attr.aria-pressed]="selectedSlot() === slot" [disabled]="!isActive(+i)"
+                                    [attr.aria-label]="'Book ' + slot" (click)="selectedSlot.set(slot)">Free</button>
+                          } @else {
+                            <span class="slot is-taken" aria-label="Unavailable">–</span>
+                          }
+                        </td>
+                      }
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <div class="actions">
+              <span class="muted" aria-live="polite">{{ selectedSlot() ? 'Selected: ' + selectedSlot() : 'No slot selected' }}</span>
+              <button type="button" class="btn btn-primary" [disabled]="!selectedSlot() || !isActive(+i)"
+                      (click)="confirmSlot(+i)">{{ t.confirmLabel }}</button>
+            </div>
+          }
+        } @else if (t.kind === 'hold') {
+          <div class="document" [class.is-target-area]="isCurrent(+i)">
+            <svg class="document-icon" viewBox="0 0 24 24" width="32" height="32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 15.5h6"/></svg>
+            <div class="document-body">
+              <p class="document-name">{{ t.documentName }}</p>
+              @if (isDone(+i)) {
+                <span class="status-ok">Signed</span>
+              } @else {
+                <span class="muted">Awaiting your signature</span>
+              }
+            </div>
+            @if (!isDone(+i)) {
+              <app-hold-button [label]="t.buttonLabel" [durationMs]="holdDurationMs()"
+                               [disabled]="!isActive(+i)" (completed)="completed.emit()" />
+            }
+          </div>
+        } @else if (t.kind === 'click') {
+          <div class="document" [class.is-target-area]="isCurrent(+i)">
+            <p class="document-name">{{ t.title }}</p>
+            @if (isDone(+i)) {
+              <span class="status-ok">Done</span>
+            } @else {
+              <button type="button" class="btn btn-primary" [disabled]="!isActive(+i)" (click)="completed.emit()">{{ t.buttonLabel }}</button>
+            }
+          </div>
+        }
+      }
+    </section>
+  </div>
+</div>

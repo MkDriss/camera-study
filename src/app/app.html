@@ -1,0 +1,128 @@
+@if (step() === 'invalid') {
+  <!-- Shown only when the link is wrong: this screen is for the researcher. -->
+  <main class="page">
+    <section class="panel">
+      <h1>This study link is incomplete</h1>
+      <p>Please use the exact link you received by email. If the problem persists, contact the researcher.</p>
+    </section>
+  </main>
+} @else {
+  <header class="site-header">
+    <div class="site-header-inner">
+      <span class="brand">
+        <span class="brand-mark" aria-hidden="true">{{ profile!.serviceName.charAt(0) }}</span>
+        {{ profile!.serviceName }}
+      </span>
+      @if (step() === 'tasks' || step() === 'done') {
+        <span class="signed-in">Signed in as {{ config.fictionalIdentity.fullName }}</span>
+      }
+    </div>
+  </header>
+
+  <!-- @if (hasPlaceholders && step() === 'instructions') {
+    <p class="placeholder-warning" role="note">
+      Researcher note: some texts in study.config.ts still start with “TODO”.
+    </p>
+  } -->
+
+  <main class="page">
+    @switch (step()) {
+      @case ('instructions') {
+        <section class="panel">
+          <h1>Before you start</h1>
+          @for (p of paras(config.texts.instructions); track $index) {
+            <p>{{ p }}</p>
+          }
+          <div class="actions">
+            <button type="button" class="btn btn-primary" (click)="start()">Start</button>
+          </div>
+        </section>
+      }
+
+      @case ('account') {
+        <section class="panel">
+          <p class="stage">Step 1 of 2</p>
+          <h1>Create your account</h1>
+          <p class="muted">For this study, the account uses a fictional identity. You don’t need to enter anything.</p>
+          <dl class="identity">
+            <div><dt>Full name</dt><dd>{{ config.fictionalIdentity.fullName }}</dd></div>
+            <div><dt>Email</dt><dd>{{ config.fictionalIdentity.email }}</dd></div>
+            <div><dt>Customer reference</dt><dd>{{ config.fictionalIdentity.reference }}</dd></div>
+          </dl>
+          <div class="actions">
+            <button type="button" class="btn btn-primary" (click)="createAccount()">Create account</button>
+          </div>
+        </section>
+      }
+
+      @case ('terms') {
+        <section class="panel">
+          <p class="stage">Step 2 of 2</p>
+          <h1>Terms and conditions</h1>
+          <div class="terms" tabindex="0" aria-label="Terms and conditions text">
+            @for (p of termsParagraphs(); track $index) {
+              <p>{{ p }}</p>
+            }
+          </div>
+          @if (termsDeclined()) {
+            <p class="inline-message" role="alert">You need to accept the terms to use {{ profile!.serviceName }}.</p>
+          }
+          <div class="actions">
+            <button type="button" class="btn btn-secondary" (click)="declineTerms()">Decline</button>
+            <button type="button" class="btn btn-primary" [disabled]="dialogOpen()" (click)="acceptTerms()">Accept and continue</button>
+          </div>
+        </section>
+      }
+
+      @case ('tasks') {
+        <app-workspace
+          [tasks]="config.tasks"
+          [taskIndex]="taskIndex()"
+          [blocked]="blocked()"
+          [holdDurationMs]="config.holdDurationMs"
+          [userName]="config.fictionalIdentity.fullName"
+          (completed)="completeTask()" />
+      }
+
+      @case ('done') {
+        <section class="panel">
+          <h1>All done</h1>
+          <p>{{ config.texts.endMessage }}</p>
+          <p class="code-box">
+            <span class="code-label">Your participant code</span>
+            <span class="code-value">{{ code }}</span>
+          </p>
+          @if (formLink(); as link) {
+            <div class="actions">
+              <a class="btn btn-primary" [href]="link">Open the questionnaire</a>
+            </div>
+          }
+        </section>
+      }
+    }
+  </main>
+
+  @if (notificationVisible()) {
+    <aside class="assistant-note" role="status">
+      <div class="assistant-avatar" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="11" r=".6" fill="currentColor"/><circle cx="15" cy="11" r=".6" fill="currentColor"/><path d="M9 14.5c1.6 1.4 4.4 1.4 6 0"/>
+        </svg>
+      </div>
+      <div class="assistant-content">
+        <p class="assistant-name">{{ profile!.assistantName }}</p>
+        @for (p of paras(config.texts.notificationText); track $index) {
+          <p>{{ p }}</p>
+        }
+        <button type="button" class="btn btn-primary btn-small" (click)="reviewNotification()">Review</button>
+      </div>
+    </aside>
+  }
+
+  @if (dialogOpen()) {
+    <app-permission-dialog
+      [title]="fill(config.texts.permissionTitle)"
+      [paragraphs]="paras(profile!.permissionBody)"
+      (answered)="onPermissionAnswer($event)" />
+  }
+}

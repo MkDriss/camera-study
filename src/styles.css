@@ -1,0 +1,805 @@
+/* One stylesheet for the whole study. The colours of each fake app come from
+   --primary / --primary-dark, set from the profile in study.config.ts. */
+:root {
+  --page: #eef1f5;
+  --surface: #ffffff;
+  --ink: #1b2230;
+  --muted: #566074;
+  --line: #d5dae3;
+  --warn-ink: #6b4500;
+  --warn-bg: #fff2cc;
+  --radius-lg: 14px;
+  --radius-sm: 8px;
+  /* System fonts on purpose: no request to Google or any other third party. */
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font: 1rem/1.55 var(--font);
+}
+
+app-root {
+  display: block;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 1.6rem;
+  line-height: 1.25;
+  margin: 0 0 .75rem;
+  letter-spacing: -.01em;
+}
+
+h2 {
+  font-size: 1.1rem;
+  line-height: 1.3;
+  margin: 0 0 .5rem;
+}
+
+p {
+  margin: 0 0 .9rem;
+  max-width: 65ch;
+}
+
+:focus-visible {
+  outline: 3px solid var(--primary, #1f4e8c);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Header ---------------------------------------------------------------- */
+.site-header {
+  background: var(--primary);
+  color: #fff;
+}
+
+.site-header-inner {
+  margin: 0 auto;
+  padding: .9rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  font-weight: 650;
+  font-size: 1.1rem;
+}
+
+.brand-mark {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, .18);
+  font-weight: 750;
+  font-size: 1.05rem;
+}
+
+.signed-in {
+  font-size: .9rem;
+  opacity: .9;
+}
+
+.placeholder-warning {
+  max-width: none;
+  margin: 0;
+  padding: .6rem 1.25rem;
+  text-align: center;
+  background: var(--warn-bg);
+  color: var(--warn-ink);
+  font-size: .9rem;
+}
+
+/* Layout ---------------------------------------------------------------- */
+.page {
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+.stage {
+  color: var(--muted);
+  font-size: .9rem;
+  margin-bottom: .35rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.actions {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+/* Account --------------------------------------------------------------- */
+.identity {
+  margin: 1.25rem 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.identity div {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) 2fr;
+  gap: 1rem;
+  padding: .7rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.identity dt {
+  color: var(--muted);
+}
+
+.identity dd {
+  margin: 0;
+  font-weight: 550;
+  overflow-wrap: anywhere;
+}
+
+/* Terms ----------------------------------------------------------------- */
+.terms {
+  max-height: 18rem;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.1rem;
+  background: #fafbfc;
+  font-size: .95rem;
+}
+
+.terms p:last-child {
+  margin-bottom: 0;
+}
+
+.inline-message {
+  color: #9b1c1c;
+  margin: 1rem 0 0;
+}
+
+/* Workspace: task panel + service ------------------------------------- */
+.workspace {
+  display: grid;
+  grid-template-columns: 25rem 1fr;
+  gap: 1.5rem;
+}
+
+/* Task panel, styled apart from the service so it reads as "your instructions". */
+.room {
+  --room-bg: #17212f;
+  --room-line: #2c3a4f;
+  --room-muted: #9aa7ba;
+  --room-accent: color-mix(in srgb, var(--primary) 45%, white);
+  position: sticky;
+  top: 1rem;
+  background: var(--room-bg);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+}
+
+.room-title {
+  font-size: 1.05rem;
+  margin-bottom: .75rem;
+}
+
+.room-progress {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: 1.1rem;
+}
+
+.room-bar {
+  flex: 1;
+  height: .5rem;
+  border-radius: 99px;
+  background: var(--room-line);
+  overflow: hidden;
+}
+
+.room-bar span {
+  display: block;
+  height: 100%;
+  background: var(--room-accent);
+  transform-origin: left center;
+  transition: transform .4s ease-out;
+}
+
+.room-count {
+  font-size: .85rem;
+  color: var(--room-muted);
+  white-space: nowrap;
+}
+
+.room-tasks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: .5rem;
+}
+
+.room-task {
+  display: flex;
+  gap: .75rem;
+  padding: .75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--room-line);
+  color: var(--room-muted);
+}
+
+.room-task.is-current {
+  border-color: var(--room-accent);
+  background: rgba(255, 255, 255, .06);
+  color: #fff;
+}
+
+.room-task.is-done {
+  opacity: .75;
+}
+
+.room-num {
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: .9rem;
+  border: 2px solid currentColor;
+}
+
+.room-task.is-current .room-num {
+  background: var(--room-accent);
+  border-color: var(--room-accent);
+  color: var(--room-bg);
+}
+
+.room-task.is-done .room-num {
+  background: var(--room-line);
+  border-color: var(--room-line);
+  color: #fff;
+}
+
+.room-body {
+  min-width: 0;
+}
+
+.room-body p {
+  margin: 0;
+}
+
+.room-task-title {
+  font-weight: 650;
+}
+
+.room-where {
+  font-size: .85rem;
+  color: var(--room-muted);
+}
+
+.room-instruction {
+  margin-top: .5rem !important;
+  font-size: .95rem;
+}
+
+.room-locked {
+  font-size: .85rem;
+  margin-top: .2rem !important;
+}
+
+.btn-room {
+  margin-top: .65rem;
+  min-height: 2.25rem;
+  padding: .35rem .85rem;
+  font-size: .9rem;
+  background: var(--room-accent);
+  color: var(--room-bg);
+}
+
+.btn-room:hover {
+  background: #fff;
+}
+
+.room :focus-visible {
+  outline-color: #fff;
+}
+
+/* The fake service */
+.service {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.service-nav {
+  display: flex;
+  gap: .25rem;
+  padding: .5rem .5rem 0;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  white-space: nowrap;
+  padding: .7rem .9rem;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  font: inherit;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tab.is-open {
+  color: var(--ink);
+  font-weight: 600;
+  border-bottom-color: var(--primary);
+}
+
+.tab.is-target {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.tab-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 99px;
+  background: var(--primary);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+.tab-check {
+  color: #2b7a4b;
+}
+
+.redirect {
+  margin: 0;
+  max-width: none;
+  padding: .65rem 1.5rem;
+  font-size: .95rem;
+  background: color-mix(in srgb, var(--primary) 9%, white);
+  border-bottom: 1px solid var(--line);
+}
+
+.link-button {
+  border: none;
+  background: none;
+  padding: 0;
+  margin-left: .35rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.service-page {
+  padding: 1.5rem;
+  min-height: 18rem;
+}
+
+.service-page h1:focus {
+  outline: none;
+}
+
+/* The area to act on in the current task: an outline that breathes gently. */
+.is-target-area {
+  border-radius: var(--radius-sm);
+  outline: 2px solid var(--primary);
+  outline-offset: 6px;
+  animation: target-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes target-pulse {
+  50% {
+    outline-color: color-mix(in srgb, var(--primary) 30%, transparent);
+  }
+}
+
+.status-ok {
+  color: #2b7a4b;
+  font-weight: 600;
+}
+
+.status-box {
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  max-width: none;
+  background: #eaf5ee;
+  border: 1px solid #bfe0cb;
+}
+
+/* Report list */
+.report-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.report-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .75rem .25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.report-list li:last-child {
+  border-bottom: none;
+}
+
+/* Calendar */
+.calendar-wrap {
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+
+.calendar {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: .35rem;
+}
+
+.calendar th {
+  font-size: .85rem;
+  color: var(--muted);
+  font-weight: 600;
+  text-align: center;
+}
+
+.calendar tbody th {
+  text-align: right;
+  padding-right: .35rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.slot {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 3.5rem;
+  height: 2.5rem;
+  border-radius: 6px;
+  font: inherit;
+  font-size: .85rem;
+}
+
+button.slot {
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, white);
+  background: color-mix(in srgb, var(--primary) 8%, white);
+  color: var(--primary);
+  cursor: pointer;
+}
+
+button.slot:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--primary) 18%, white);
+}
+
+button.slot.is-selected,
+button.slot.is-selected:hover:not(:disabled) {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+button.slot:disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+.slot.is-taken {
+  background: #f1f3f6;
+  color: #a3abb8;
+}
+
+.actions .muted {
+  margin-right: auto;
+  align-self: center;
+}
+
+/* Document (hold / click tasks) */
+.document {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.document-icon {
+  color: var(--muted);
+  flex: none;
+}
+
+.document-body {
+  flex: 1;
+  min-width: 10rem;
+}
+
+.document-name {
+  font-weight: 600;
+  margin: 0;
+}
+
+@media (max-width: 52rem) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .room {
+    position: static;
+  }
+}
+
+@media (max-width: 44rem) {
+  .panel {
+    padding: 1.25rem;
+  }
+
+  .identity div {
+    grid-template-columns: 1fr;
+    gap: .1rem;
+  }
+
+  .service-page {
+    padding: 1.1rem;
+  }
+}
+
+/* Buttons --------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: .6rem 1.25rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid transparent;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-dark);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--muted);
+}
+
+.btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.btn-small {
+  min-height: 2.25rem;
+  padding: .35rem .9rem;
+  font-size: .95rem;
+}
+
+/* Hold button: a darker band fills from left to right while held. */
+.hold {
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.hold-fill {
+  /* Light overlay, so the progress stays visible whatever the hover state. */
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, .32);
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+
+.hold-label {
+  position: relative;
+}
+
+/* End screen ------------------------------------------------------------ */
+.code-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+  margin: 1.5rem auto 0;
+  padding: 1.25rem;
+  max-width: none;
+  border: 2px dashed var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.code-label {
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.code-value {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+  font-variant-numeric: tabular-nums;
+}
+
+.code-list code {
+  word-break: break-all;
+  background: var(--page);
+  padding: .1rem .35rem;
+  border-radius: 4px;
+}
+
+/* Assistant notification (jit condition) -------------------------------- */
+.assistant-note {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 10;
+  display: flex;
+  gap: .8rem;
+  width: min(40rem, calc(100vw - 2.5rem));
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  box-shadow: 0 12px 32px rgba(27, 34, 48, .18);
+  animation: note-in .25s ease-out;
+}
+
+.assistant-avatar {
+  flex: none;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--primary);
+  color: #fff;
+}
+
+.assistant-name {
+  font-weight: 650;
+  margin-bottom: .2rem;
+}
+
+.assistant-content p {
+  font-size: .95rem;
+}
+
+@keyframes note-in {
+  from {
+    opacity: 0;
+    transform: translateY(.5rem);
+  }
+}
+
+/* Permission dialog ----------------------------------------------------- */
+dialog.permission {
+  width: min(40rem, calc(100vw - 2rem));
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 1.5rem 1.25rem;
+  color: var(--ink);
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(27, 34, 48, .3);
+}
+
+dialog.permission::backdrop {
+  background: rgba(27, 34, 48, .45);
+}
+
+.permission-icon {
+  width: 3.25rem;
+  height: 3.25rem;
+  margin: 0 auto .9rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--primary) 14%, white);
+  color: var(--primary);
+}
+
+.permission h2 {
+  font-size: 1.2rem;
+}
+
+.permission-body {
+  text-align: left;
+  font-size: .95rem;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.permission-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+  margin-top: 1.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .assistant-note,
+  .is-target-area {
+    animation: none;
+  }
+
+  .room-bar span {
+    transition: none;
+  }
+}
